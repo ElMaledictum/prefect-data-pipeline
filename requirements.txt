@@ -4,7 +4,7 @@ pandas
 pyarrow
 fastparquet
 pgcli
-psycopg2
+# psycopg2
 psycopg[binary,pool]
 sqlalchemy
 prefect

@@ -5,14 +5,13 @@ from prefect_gcp.cloud_storage import GcsBucket
 from prefect_gcp import GcpCredentials
 
 
-@task(retries=3)
+@task()
 def extract_from_gcs(color: str, year: int, month: int) -> Path:
     """Download data from gcs"""
-    # gcs_path = f"data/{color}_tripdata_{year}-{month:02}.parquet"
-    gcs_path = f"/data/{color}/{color}_tripdata_{year}-{month:02}.parquet"
+    gcs_path = f"data/{color}/{color}_tripdata_{year}-{month:02}.parquet"
     gcs_block = GcsBucket.load("zoom-gcs")
     gcs_block.get_directory(from_path=gcs_path, local_path=f"../data/")
-    return Path(f"../{gcs_path}")
+    return Path(f"../data/{gcs_path}")
 
 
 @task()
@@ -29,12 +28,12 @@ def transform(path: Path) -> pd.DataFrame:
 @task()
 def write_bq(df: pd.DataFrame) -> None:
     """Write dataframe to Bigquery"""
-    gcp_creds = GcpCredentials.load("gcp-creds")
+    gcs_creds = GcpCredentials.load("gcs-creds")
     df.to_gbq(
-        destination_table="dezoomcamp"
-        project_id= #project id in google cloud
-        credentials=gcp_creds.get_credentials_from_service_account()
-        chunksize=500_000
+        destination_table="trips_data_all.rides",
+        project_id="sacred-union-396606",
+        credentials=gcs_creds.get_credentials_from_service_account(),
+        chunksize=500_000,
         if_exists="append"
     )
 
