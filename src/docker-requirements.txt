@@ -1,0 +1,11 @@
+# python -m pip install  --upgrade pip
+
+pandas
+pyarrow
+fastparquet
+sqlalchemy
+prefect
+prefect-sqlalchemy==0.2.2
+prefect-gcp[cloud_storage]==0.2.4
+protobuf
+pandas-gbq
