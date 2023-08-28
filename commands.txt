@@ -1,0 +1,2 @@
+prefect deployment build src/etl_web_to_gcs.py:etl_parent_flow -n "Parametrized ETL"
+prefect deployment apply etl_parent_flow-deployment.yaml

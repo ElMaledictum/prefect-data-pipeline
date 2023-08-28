@@ -18,12 +18,11 @@ def extract_from_gcs(color: str, year: int, month: int) -> Path:
 def transform(path: Path) -> pd.DataFrame:
     """Data cleaning"""
     df = pd.read_parquet(path)
-    print(
-        f"pre: Missing passenger count: {df['passenger_count'].isna().sum()}")
+    print(f"pre: Missing passenger count: {df['passenger_count'].isna().sum()}")
     df["passenger_count"].fillna(0, inplace=True)
-    print(
-        f"post: Missing passenger count: {df['passenger_count'].isna().sum()}")
+    print(f"post: Missing passenger count: {df['passenger_count'].isna().sum()}")
     return df
+
 
 @task()
 def write_bq(df: pd.DataFrame) -> None:
@@ -34,8 +33,10 @@ def write_bq(df: pd.DataFrame) -> None:
         project_id="sacred-union-396606",
         credentials=gcs_creds.get_credentials_from_service_account(),
         chunksize=500_000,
-        if_exists="append"
+        if_exists="append",
     )
+    return
+
 
 @flow()
 def etl_gcs_to_bg():
@@ -45,7 +46,6 @@ def etl_gcs_to_bg():
     month = 1
 
     path = extract_from_gcs(color, year, month)
-    print (path)
     df = transform(path)
     write_bq(df)
 
